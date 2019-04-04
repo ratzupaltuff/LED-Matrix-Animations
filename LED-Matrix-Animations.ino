@@ -1,50 +1,34 @@
 #include <Adafruit_NeoPixel.h>
-#define PIN         1
-//#define PIN digitalio.DigitalInOut(board.NEOPIXEL)
-//digitalio.DigitalInOut(board.NEOPIXEL)
-#define NUMPIXELS   144
+#define PIN         1  //for hardware acceleration choose 1
+#define HEIGHT 12
+#define WIDTH 12
+#define NUMPIXELS   height*width
 
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800); //initialize NeoPixel (library) led-strip
 
 void setup() {
-
-  pixels.begin();
-
-  pixels.setPixelColor(5, pixels.Color(50, 0, 0));
-  pixels.setPixelColor(6, pixels.Color(50, 0, 0));
-  pixels.show();
-  delay(1000); 
-  pixels.setPixelColor(4, pixels.Color(50, 0, 0));
-  pixels.setPixelColor(7, pixels.Color(50, 0, 0));
-  pixels.show();
-  delay(1000); 
-  pixels.setPixelColor(3, pixels.Color(50, 0, 0));
-  pixels.setPixelColor(8, pixels.Color(50, 0, 0));
-  pixels.show();
-  delay(1000); 
-  for (int i = 0; i < 12; i++){
-    pixels.setPixelColor(i, pixels.Color(0, 50, 0)); 
-  }
-  pixels.show();
-  delay(2000);
-  pixels.clear();
+  pixels.begin(); //begin to control the led-strip
 }
 
 void loop() {
-  /*for (int i = 0; i < 12; i++){
-    for (int j = 0; j < 12; j++){
-      pixels.setPixelColor(getPixel(i, j), pixels.Color(150, 150, 150));
-      pixels.show();
-     // delay(2);
-    }
+  middleGrowingAnimation();
+  delay(500);
+  middleGrowingRingAnimation();
+  delay(500);
+}
+
+int getPixel(int x, int y){
+  if ((x % 2) == 1){
+    return (x * WIDTH) + (HEIGHT - 1 - y);
+  } else {
+    return (x * WIDTH) + y;
   }
-  pixels.show();
-  delay(1000);
+}
+
+void middleGrowingAnimation(){
+  int x1 = WIDTH/2-1, x2 = WIDTH/2, y1 = HEIGHT/2-1, y2 = HEIGHT/2;
   pixels.clear();
-  pixels.show();
-  delay(1000);*/
-  int x1 = 5, x2 = 6, y1 = 5, y2 = 6;
-  for (int i = 0; i < 6; i++){
+  for (int i = 0; i < HEIGHT/2; i++){
     for (int x = x1; x <= x2; x++){
       for (int y = y1; y <= y2; y++){
         pixels.setPixelColor(getPixel(x, y), pixels.Color(30, 0, 0));
@@ -57,33 +41,27 @@ void loop() {
     y2++;
     delay(50);
   }
-  delay(500);
-  pixels.clear();
-  pixels.show();
-  delay(500);
-  /*
-  for (int i = 0; i < 12; i++){
-    if (i % 2 == 1){
-      for (int j = 11; j >= 0; j--){
-        pixels.setPixelColor((i * 12) + j, pixels.Color(150, 0, 0));
-        pixels.show();
-        delay(200);
-      }
-    } else {
-      for (int j = 0; j < 12; j++){
-        pixels.setPixelColor((i * 12) + j, pixels.Color(150, 0, 0));
-        pixels.show();
-        delay(200);
-      }
-    }
-  }*/
-
 }
 
-int getPixel(int x, int y){
-  if ((x % 2) == 1){
-    return (x * 12) + (11 - y);
-  } else {
-    return (x * 12) + y;
+void middleGrowingRingAnimation(){
+  int x1 = WIDTH/2-1, x2 = WIDTH/2, y1 = HEIGHT/2-1, y2 = HEIGHT/2;
+  pixels.clear();
+  for (int i = 0; i < HEIGHT/2; i++){
+    for (int x = x1; x <= x2; x++){
+      for (int y = y1; y <= y2; y++){
+        pixels.setPixelColor(getPixel(x, y), pixels.Color(30, 0, 0));
+      }
+    }
+     for (int x = x1+1; x <= x2-1; x++){
+      for (int y = y1+1; y <= y2-1; y++){
+        pixels.setPixelColor(getPixel(x, y), pixels.Color(0, 0, 0));
+      }
+    }
+    pixels.show();
+    x1--;
+    x2++;
+    y1--;
+    y2++;
+    delay(50);
   }
 }
